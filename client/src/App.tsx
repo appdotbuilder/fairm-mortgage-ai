@@ -48,63 +48,16 @@ function App() {
     setHasSearched(true);
     
     try {
-      // Since the backend handler is a stub, we'll use mock data for demonstration
-      const mockQuotes: MortgageQuote[] = [
-        {
-          rate_id: 1,
-          lender_id: 1,
-          lender_name: 'Prime Mortgage Co.',
-          lender_logo_url: null,
-          loan_type: formData.loan_type,
-          loan_term: formData.loan_term,
-          interest_rate: 6.75,
-          apr: 6.89,
-          points: 0,
-          monthly_payment: 2600.32,
-          total_interest: 536115.20,
-          closing_costs: 8500,
-          down_payment_percent: (formData.down_payment / formData.property_value) * 100,
-          loan_to_value_ratio: (formData.loan_amount / formData.property_value) * 100
-        },
-        {
-          rate_id: 2,
-          lender_id: 2,
-          lender_name: 'Eagle Bank',
-          lender_logo_url: null,
-          loan_type: formData.loan_type,
-          loan_term: formData.loan_term,
-          interest_rate: 6.85,
-          apr: 6.95,
-          points: 0.5,
-          monthly_payment: 2628.74,
-          total_interest: 546346.40,
-          closing_costs: 7200,
-          down_payment_percent: (formData.down_payment / formData.property_value) * 100,
-          loan_to_value_ratio: (formData.loan_amount / formData.property_value) * 100
-        },
-        {
-          rate_id: 3,
-          lender_id: 3,
-          lender_name: 'HomeFirst Lending',
-          lender_logo_url: null,
-          loan_type: formData.loan_type,
-          loan_term: formData.loan_term,
-          interest_rate: 6.65,
-          apr: 6.78,
-          points: 1.0,
-          monthly_payment: 2574.69,
-          total_interest: 526888.40,
-          closing_costs: 9200,
-          down_payment_percent: (formData.down_payment / formData.property_value) * 100,
-          loan_to_value_ratio: (formData.loan_amount / formData.property_value) * 100
-        }
-      ];
-
+      // Make API call to get mortgage quotes
+      const fetchedQuotes = await trpc.getMortgageQuotes.query(formData);
+      
       // Sort by APR for best rates first
-      mockQuotes.sort((a, b) => a.apr - b.apr);
-      setQuotes(mockQuotes);
+      const sortedQuotes = fetchedQuotes.sort((a, b) => a.apr - b.apr);
+      setQuotes(sortedQuotes);
     } catch (error) {
       console.error('Failed to get quotes:', error);
+      // Set empty array on error to show "no rates found" message
+      setQuotes([]);
     } finally {
       setIsLoading(false);
     }
