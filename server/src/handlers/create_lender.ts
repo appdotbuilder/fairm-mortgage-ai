@@ -1,18 +1,25 @@
+import { db } from '../db';
+import { lendersTable } from '../db/schema';
 import { type CreateLenderInput, type Lender } from '../schema';
 
-export async function createLender(input: CreateLenderInput): Promise<Lender> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is creating a new lender in the database.
-    // This will insert a new lender record with the provided details and return the created lender.
-    return Promise.resolve({
-        id: 0, // Placeholder ID
+export const createLender = async (input: CreateLenderInput): Promise<Lender> => {
+  try {
+    // Insert lender record
+    const result = await db.insert(lendersTable)
+      .values({
         name: input.name,
-        logo_url: input.logo_url || null,
-        website_url: input.website_url || null,
-        phone: input.phone || null,
-        email: input.email || null,
-        is_active: input.is_active,
-        created_at: new Date(),
-        updated_at: new Date()
-    } as Lender);
-}
+        logo_url: input.logo_url,
+        website_url: input.website_url,
+        phone: input.phone,
+        email: input.email,
+        is_active: input.is_active
+      })
+      .returning()
+      .execute();
+
+    return result[0];
+  } catch (error) {
+    console.error('Lender creation failed:', error);
+    throw error;
+  }
+};
